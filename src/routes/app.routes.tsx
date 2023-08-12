@@ -1,8 +1,10 @@
 import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Home } from '../screens/Home'
+import { Departure } from '../screens/Departure'
 
 type RootParamlist = {
     home: undefined
+    departure: undefined
 }
 // export type AppNavigatorRoutesProps = NativeStackNavigationProp<RootParamlist>
 
@@ -15,6 +17,10 @@ export function AppRoutes() {
             <Screen 
                 name='home'
                 component={Home}
+            />
+            <Screen 
+                name='departure'
+                component={Departure}
             />
         </Navigator>
     )
