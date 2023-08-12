@@ -4,7 +4,7 @@ import { Home } from '../screens/Home'
 type RootParamlist = {
     home: undefined
 }
-export type AppNavigatorRoutesProps = NativeStackNavigationProp<RootParamlist>
+// export type AppNavigatorRoutesProps = NativeStackNavigationProp<RootParamlist>
 
 const { Navigator, Screen } = createNativeStackNavigator<RootParamlist>()
 
