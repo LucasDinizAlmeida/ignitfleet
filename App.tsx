@@ -12,6 +12,7 @@ import { SignIn } from './src/screens/SignIn';
 import { Loading } from './src/components/Loading';
 import { StatusBar } from 'react-native';
 import { Routes } from './src/routes';
+import { RealmProvider } from './src/libs/realm';
 
 export default function App() {
 
@@ -33,7 +34,9 @@ export default function App() {
             translucent
           />
             <UserProvider fallback={SignIn}>
-              <Routes />
+              <RealmProvider>
+                <Routes />
+              </RealmProvider>
             </UserProvider>
 
         </SafeAreaProvider>
