@@ -26,6 +26,8 @@ export function Arrival() {
   const historic = useObject(Historic, new BSON.UUID(id) as unknown as string);
   const realm = useRealm()
 
+  const title = historic?.status === 'departure'? 'Saída' : 'Chegada'
+
   function removeVehicleUsage() {
     realm.write(() => {
       realm.delete(historic)
@@ -45,11 +47,33 @@ export function Arrival() {
       ]
     )
   }
+
+  function handleRegisterArrival() {
+
+    try {
+      if(!historic) {
+        Alert.alert('Error', 'Não foi possível acessar os dados do veículo.')
+      } else {
+        realm.write(() => {
+          historic.status = 'arrival' 
+          historic.updated_at = new Date()
+        })
+
+        Alert.alert('Chegada', 'Chegada registrada com sucesso.')
+
+        goBack()
+      }      
+
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Error', 'Não foi possível registrar a chegada do veículo.')
+    }
+  }
   
 
   return (
     <Container>
-      <Header title='Chegada'/>
+      <Header title={title}/>
 
       <Content>
         <Label>
@@ -67,12 +91,17 @@ export function Arrival() {
         </Description>
 
 
-        <Footer>
-          <ButtonIcon icon={X} onPress={handleRemoveVehicleUsage}/>
-          <Button 
-            title='Registrar Chegada'
-          />
-        </Footer>
+        {
+          historic?.status === 'departure' &&
+          <Footer>
+            <ButtonIcon icon={X} onPress={handleRemoveVehicleUsage}/>
+            <Button 
+              title='Registrar Chegada'
+              onPress={handleRegisterArrival}
+            />
+          </Footer>
+        }
+        
       </Content>
     </Container>
   );
