@@ -4,7 +4,7 @@ import { TouchableOpacityProps } from 'react-native';
 import { IconProps } from 'phosphor-react-native';
 import { useTheme } from 'styled-components';
 
-type IconBoxProps = (Props: IconProps) => JSX.Element
+export type IconBoxProps = (Props: IconProps) => JSX.Element
 
 interface Props extends TouchableOpacityProps {
     icon: IconBoxProps

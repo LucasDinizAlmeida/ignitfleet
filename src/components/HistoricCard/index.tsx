@@ -16,6 +16,7 @@ interface Props extends TouchableOpacityProps {
 }
 
 export function HistoricCard({ data, ...rest}: Props) {
+    
 
     const theme = useTheme()
 
