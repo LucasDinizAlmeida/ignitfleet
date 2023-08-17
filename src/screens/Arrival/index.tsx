@@ -1,5 +1,5 @@
-import React from 'react';
-import { Container, Content, Description, LicensePlate, Label, Footer } from './styles';
+import React, { useEffect, useState } from 'react';
+import { Container, Content, Description, LicensePlate, Label, Footer, AsyncMessage } from './styles';
 import { X } from 'phosphor-react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Header } from '../../components/Header';
@@ -10,12 +10,15 @@ import { useObject, useRealm } from '../../libs/realm';
 import { Historic } from '../../libs/realm/schemas/Historic';
 import { BSON } from 'realm';
 import { Alert } from 'react-native';
+import { getLastAsyncTimeStamp } from '../../libs/asyncStorage/styncStorage';
 
 interface RouteParamsProps {
   id: string
 }
 
 export function Arrival() {
+
+  const [dataNotSynced, setDataNotSynced] = useState(false)
 
   const { goBack } = useNavigation()
 
@@ -69,6 +72,11 @@ export function Arrival() {
       Alert.alert('Error', 'Não foi possível registrar a chegada do veículo.')
     }
   }
+
+  useEffect(() => {
+    getLastAsyncTimeStamp()
+      .then(lastSync => setDataNotSynced(lastSync < historic!.updated_at.getTime()))
+  }, [])
   
 
   return (
@@ -92,15 +100,24 @@ export function Arrival() {
         
       </Content>
       {
-          historic?.status === 'departure' &&
-          <Footer>
-            <ButtonIcon icon={X} onPress={handleRemoveVehicleUsage}/>
-            <Button 
-              title='Registrar Chegada'
-              onPress={handleRegisterArrival}
-            />
-          </Footer>
-        }
+        historic?.status === 'departure' &&
+        <Footer>
+          <ButtonIcon icon={X} onPress={handleRemoveVehicleUsage}/>
+          <Button 
+            title='Registrar Chegada'
+            onPress={handleRegisterArrival}
+          />
+        </Footer>
+      }
+
+      {
+        dataNotSynced &&
+        <AsyncMessage>
+          Sincronização da {historic?.status === 'departure'? 'partida' : 'chegada'} pendente.
+        </AsyncMessage>
+
+      }
+
     </Container>
   );
 }
