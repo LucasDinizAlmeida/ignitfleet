@@ -1,22 +1,29 @@
 import { useEffect, useState } from 'react';
 import { Alert, FlatList } from 'react-native';
 import { Container, Content, Label, Title } from './styles';
-import { HomeHeader } from '../../components/HomeHeader';
-import { CarStatus } from '../../components/CarStatus';
-import { useNavigation } from '@react-navigation/native';
-import { Historic } from '../../libs/realm/schemas/Historic';
 
+import { CloudArrowUp } from 'phosphor-react-native';
+
+import { useNavigation } from '@react-navigation/native';
+
+import { Historic } from '../../libs/realm/schemas/Historic';
 import { useUser } from '@realm/react';
 import { useQuery, useRealm } from '../../libs/realm';
-import { HistoricCard, HistoricCardProps } from '../../components/HistoricCard';
-import dayjs from 'dayjs';
 import { getLastAsyncTimeStamp, saveLastSyncTimestamp } from '../../libs/asyncStorage/styncStorage';
+
+import { HomeHeader } from '../../components/HomeHeader';
+import { CarStatus } from '../../components/CarStatus';
+import { TopMessage } from '../../components/TopMessage';
+import { HistoricCard, HistoricCardProps } from '../../components/HistoricCard';
+
+import dayjs from 'dayjs';
 import Toast from 'react-native-toast-message';
 
 export function Home() {
 
   const [vehicleInUse, setVehicleInUse] = useState<Historic | null>(null)
   const [vehicleHistoric, setVehicleHistoric] = useState<HistoricCardProps[]>([])
+  const [percentageToSync, setPercentageToSync] = useState<string | null>(null)
 
   const { navigate } = useNavigation()
 
@@ -70,11 +77,18 @@ export function Home() {
 
     if(percentage === 100) {
       await saveLastSyncTimestamp()
-      fetchHistoric()
+      await fetchHistoric()
+
+      setPercentageToSync(null)
+
       Toast.show({
         type: 'info',
         text1: 'Todos os dados foram sincronizados.'
       })
+    }
+
+    if(percentage < 100) {
+      setPercentageToSync(`${percentage.toFixed(0)}% sincronizado.`)
     }
   }
 
@@ -122,6 +136,15 @@ export function Home() {
 
   return (
     <Container>
+
+      {
+        percentageToSync &&
+        <TopMessage 
+          title={percentageToSync}
+          icon={CloudArrowUp}
+        />
+      }
+
       <HomeHeader />
 
       <Content>
