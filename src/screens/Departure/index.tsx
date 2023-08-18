@@ -137,7 +137,7 @@ export function Departure() {
             currentCoords && 
             <Map 
               coordinates={[
-                { latitude: -21.031354, longitude: -41.655301},
+                { latitude: -21.046053, longitude: -41.652395},
                 currentCoords
               ]}
             />
