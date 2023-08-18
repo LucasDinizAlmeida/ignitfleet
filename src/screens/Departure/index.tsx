@@ -8,7 +8,7 @@ import { TextAreaInput } from '../../components/TextAreaInput';
 import { Button } from '../../components/Button';
 import { licensePlateValidate } from '../../utils/licensesPlateValidate';
 
-import { useForegroundPermissions } from 'expo-location';
+import { useForegroundPermissions, watchPositionAsync, LocationAccuracy, LocationSubscription } from 'expo-location';
 
 import { useRealm } from '../../libs/realm';
 import { Historic } from '../../libs/realm/schemas/Historic';
@@ -67,6 +67,24 @@ export function Departure() {
   useEffect(() => {
     requestLocationForegroundPermission()
   }, [])
+
+  useEffect(() => {
+    if(!locationForegroundPermission?.granted) {
+      return
+    }
+
+    let subscription: LocationSubscription
+
+    watchPositionAsync({
+      accuracy: LocationAccuracy.High,
+      timeInterval: 1000
+    }, (location) => {
+      console.log(location)
+    })
+      .then(response => subscription = response)
+
+    return () => subscription.remove()
+  }, [locationForegroundPermission])
 
   if(!locationForegroundPermission?.granted) {
      return (
