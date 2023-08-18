@@ -17,6 +17,7 @@ import { useUser } from '@realm/react';
 import { useNavigation } from '@react-navigation/native';
 import { Loading } from '../../components/Loading';
 import { LocationInfo } from '../../components/LocationInfo';
+import { Car } from 'phosphor-react-native';
 
 export function Departure() {
 
@@ -133,6 +134,7 @@ export function Departure() {
             {
               currentAddress &&
               <LocationInfo 
+                icon={Car}
                 label='Localização atual'
                 description={currentAddress}
               />
