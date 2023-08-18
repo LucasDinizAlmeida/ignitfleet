@@ -7,6 +7,7 @@ import { LicensePlateInput } from '../../components/LicensePlateInput/inde';
 import { TextAreaInput } from '../../components/TextAreaInput';
 import { Button } from '../../components/Button';
 import { licensePlateValidate } from '../../utils/licensesPlateValidate';
+import { getAddressLocation } from '../../utils/getAddressLocation'
 
 import { useForegroundPermissions, watchPositionAsync, LocationAccuracy, LocationSubscription } from 'expo-location';
 
@@ -79,7 +80,10 @@ export function Departure() {
       accuracy: LocationAccuracy.High,
       timeInterval: 1000
     }, (location) => {
-      console.log(location)
+
+      getAddressLocation(location.coords)
+        .then(response => console.log(response))
+        
     })
       .then(response => subscription = response)
 
