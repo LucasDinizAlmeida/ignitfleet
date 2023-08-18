@@ -15,12 +15,14 @@ import { useRealm } from '../../libs/realm';
 import { Historic } from '../../libs/realm/schemas/Historic';
 import { useUser } from '@realm/react';
 import { useNavigation } from '@react-navigation/native';
+import { Loading } from '../../components/Loading';
 
 export function Departure() {
 
   const [description, setDescription] = useState('')
   const [licensePlate, setLicensePlate] = useState('')
   const [isRegistering, setIsRegistering] = useState(false)
+  const [isLoadingLocation, setIsLoadingLocation] = useState(true)
 
   const [locationForegroundPermission, requestLocationForegroundPermission] = useForegroundPermissions()
 
@@ -69,6 +71,7 @@ export function Departure() {
     requestLocationForegroundPermission()
   }, [])
 
+
   useEffect(() => {
     if(!locationForegroundPermission?.granted) {
       return
@@ -83,12 +86,17 @@ export function Departure() {
 
       getAddressLocation(location.coords)
         .then(response => console.log(response))
-        
+        .finally(() => setIsLoadingLocation(false))
     })
       .then(response => subscription = response)
 
-    return () => subscription.remove()
+    return () => {
+      if(subscription) {
+        subscription.remove()
+      }
+    }
   }, [locationForegroundPermission])
+
 
   if(!locationForegroundPermission?.granted) {
      return (
@@ -103,6 +111,10 @@ export function Departure() {
         }
       </Container>
      )
+  }
+
+  if(isLoadingLocation) {
+    return <Loading />
   }
 
   return (
