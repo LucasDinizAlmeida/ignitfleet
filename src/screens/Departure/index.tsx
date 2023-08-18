@@ -16,6 +16,7 @@ import { Historic } from '../../libs/realm/schemas/Historic';
 import { useUser } from '@realm/react';
 import { useNavigation } from '@react-navigation/native';
 import { Loading } from '../../components/Loading';
+import { LocationInfo } from '../../components/LocationInfo';
 
 export function Departure() {
 
@@ -23,6 +24,7 @@ export function Departure() {
   const [licensePlate, setLicensePlate] = useState('')
   const [isRegistering, setIsRegistering] = useState(false)
   const [isLoadingLocation, setIsLoadingLocation] = useState(true)
+  const [currentAddress, setCurrentAddress] = useState<string | null>(null)
 
   const [locationForegroundPermission, requestLocationForegroundPermission] = useForegroundPermissions()
 
@@ -85,7 +87,11 @@ export function Departure() {
     }, (location) => {
 
       getAddressLocation(location.coords)
-        .then(response => console.log(response))
+        .then(address => {
+          if(address) {
+            setCurrentAddress(address)
+          }
+        })
         .finally(() => setIsLoadingLocation(false))
     })
       .then(response => subscription = response)
@@ -124,6 +130,14 @@ export function Departure() {
       <KeyboardAwareScrollView extraHeight={100}>
         <ScrollView>
           <Content>
+            {
+              currentAddress &&
+              <LocationInfo 
+                label='Localização atual'
+                description={currentAddress}
+              />
+            }
+
             <LicensePlateInput 
               ref={licensePlateRef}
               label='Placa do veículo'
