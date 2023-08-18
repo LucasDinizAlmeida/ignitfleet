@@ -8,7 +8,7 @@ interface Props extends MapViewProps {
     coordinates: LatLng[]
 }
 
-export function Map({ coordinates }: Props) {
+export function Map({ coordinates, ...rest }: Props) {
 
     const theme = useTheme()
 
@@ -35,6 +35,7 @@ export function Map({ coordinates }: Props) {
                 longitudeDelta: 0.005
             }}
             onMapLoaded={onMapLoaded}
+            {...rest}
         >
             <Marker coordinate={coordinates[0]} identifier="departure">
                 <IconBox size="SMALL" icon={Car}/>
