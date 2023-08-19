@@ -11,6 +11,8 @@ import { Historic } from '../../libs/realm/schemas/Historic';
 import { BSON } from 'realm';
 import { Alert } from 'react-native';
 import { getLastAsyncTimeStamp } from '../../libs/asyncStorage/styncStorage';
+import { stopLocationTask } from '../../tasks/backgrundTaskLocation';
+import { getLocationStorage } from '../../libs/asyncStorage/locationStorage';
 
 interface RouteParamsProps {
   id: string
@@ -51,21 +53,25 @@ export function Arrival() {
     )
   }
 
-  function handleRegisterArrival() {
+  async function handleRegisterArrival() {
 
     try {
       if(!historic) {
-        Alert.alert('Error', 'Não foi possível acessar os dados do veículo.')
-      } else {
-        realm.write(() => {
-          historic.status = 'arrival' 
-          historic.updated_at = new Date()
-        })
+        return Alert.alert('Error', 'Não foi possível acessar os dados do veículo.')
+      } 
+      
+      await stopLocationTask()
 
-        Alert.alert('Chegada', 'Chegada registrada com sucesso.')
+      realm.write(() => {
+        historic.status = 'arrival' 
+        historic.updated_at = new Date()
+      })
 
-        goBack()
-      }      
+      
+      Alert.alert('Chegada', 'Chegada registrada com sucesso.')
+
+      goBack()
+       
 
     } catch (error) {
       console.log(error)
@@ -73,10 +79,18 @@ export function Arrival() {
     }
   }
 
+  async function getLocationInfo() {
+    const lastsync = await getLastAsyncTimeStamp()
+    const updatedAt = historic!.updated_at.getTime()
+    setDataNotSynced(lastsync < updatedAt)
+
+    const locationStorage = await getLocationStorage()
+    console.log(locationStorage)
+  }
+
   useEffect(() => {
-    getLastAsyncTimeStamp()
-      .then(lastSync => setDataNotSynced(lastSync < historic!.updated_at.getTime()))
-  }, [])
+    getLocationInfo()
+  }, [historic])
   
 
   return (

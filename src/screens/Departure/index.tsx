@@ -9,7 +9,7 @@ import { Button } from '../../components/Button';
 import { licensePlateValidate } from '../../utils/licensesPlateValidate';
 import { getAddressLocation } from '../../utils/getAddressLocation'
 
-import { useForegroundPermissions, watchPositionAsync, LocationAccuracy, LocationSubscription, LocationObjectCoords } from 'expo-location';
+import { useForegroundPermissions, watchPositionAsync, LocationAccuracy, LocationSubscription, LocationObjectCoords, requestBackgroundPermissionsAsync } from 'expo-location';
 
 import { useRealm } from '../../libs/realm';
 import { Historic } from '../../libs/realm/schemas/Historic';
@@ -19,6 +19,7 @@ import { Loading } from '../../components/Loading';
 import { LocationInfo } from '../../components/LocationInfo';
 import { Car } from 'phosphor-react-native';
 import { Map } from '../../components/Map';
+import { startLocationTask } from '../../tasks/backgrundTaskLocation';
 
 export function Departure() {
 
@@ -39,7 +40,7 @@ export function Departure() {
   const descriptionRef = useRef<TextInput>(null)
   const licensePlateRef = useRef<TextInput>(null)
 
-  function handleDepartureRegister() {
+  async function handleDepartureRegister() {
 
     try {
       if(!licensePlateValidate(licensePlate)) {
@@ -51,8 +52,22 @@ export function Departure() {
         descriptionRef.current?.focus()
         return Alert.alert('Finalidade', 'Por favor, informe a finalidade de uso do veículo')
       }
+
+      if(!currentCoords?.latitude && !currentCoords?.longitude) {
+        return Alert.alert('Localização', 'Não foi possível obter a localização atual, tente novamente.')
+      }
   
       setIsRegistering(true)
+
+      const backgroundLocationPermission = await requestBackgroundPermissionsAsync()
+
+      if(!backgroundLocationPermission.granted) {
+        setIsRegistering(false)
+        return Alert.alert('Localização', 'É necessário permitir que o App tenha acesso a localização em segundo plano. Acesse as configurações do dispositovo e habilite "Permitir o tempo todo"')
+      }
+
+      await startLocationTask()
+
       realm.write(() => {
         realm.create('Historic', Historic.generate({
           user_id: user!.id,
@@ -137,9 +152,6 @@ export function Departure() {
             currentCoords && 
             <Map 
               coordinates={[
-                { latitude: -21.029999, longitude: -41.657321},
-                { latitude: -21.030143, longitude: -41.657983},
-                { latitude: -21.030274, longitude: -41.657930},
                 currentCoords
               ]}
             />
