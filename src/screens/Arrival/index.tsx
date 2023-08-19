@@ -13,6 +13,8 @@ import { Alert } from 'react-native';
 import { getLastAsyncTimeStamp } from '../../libs/asyncStorage/styncStorage';
 import { stopLocationTask } from '../../tasks/backgrundTaskLocation';
 import { getLocationStorage } from '../../libs/asyncStorage/locationStorage';
+import { LatLng } from 'react-native-maps';
+import { Map } from '../../components/Map';
 
 interface RouteParamsProps {
   id: string
@@ -21,6 +23,7 @@ interface RouteParamsProps {
 export function Arrival() {
 
   const [dataNotSynced, setDataNotSynced] = useState(false)
+  const [coordinates, setCoordinates] = useState<LatLng[]>([])
 
   const { goBack } = useNavigation()
 
@@ -85,7 +88,7 @@ export function Arrival() {
     setDataNotSynced(lastsync < updatedAt)
 
     const locationStorage = await getLocationStorage()
-    console.log(locationStorage)
+    setCoordinates(locationStorage)
   }
 
   useEffect(() => {
@@ -96,6 +99,9 @@ export function Arrival() {
   return (
     <Container>
       <Header title={title}/>
+      {
+        coordinates.length > 0 && <Map coordinates={coordinates}/>
+      }
 
       <Content>
         <Label>
