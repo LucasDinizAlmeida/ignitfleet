@@ -36,10 +36,12 @@ export function Arrival() {
 
   const title = historic?.status === 'departure'? 'Em uso' : 'Detalhes'
 
-  function removeVehicleUsage() {
+  async function removeVehicleUsage() {
     realm.write(() => {
       realm.delete(historic)
     })
+
+    await stopLocationTask()
 
     goBack()
   }
@@ -63,12 +65,14 @@ export function Arrival() {
         return Alert.alert('Error', 'Não foi possível acessar os dados do veículo.')
       } 
       
-      await stopLocationTask()
+      
 
       realm.write(() => {
         historic.status = 'arrival' 
         historic.updated_at = new Date()
       })
+
+      await stopLocationTask()
 
       
       Alert.alert('Chegada', 'Chegada registrada com sucesso.')
