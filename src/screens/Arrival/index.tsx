@@ -19,6 +19,7 @@ import { Locations } from '../../components/Locations';
 import { LocationInfoProps } from '../../components/LocationInfo';
 import { getAddressLocation } from '../../utils/getAddressLocation';
 import dayjs from 'dayjs';
+import { Loading } from '../../components/Loading';
 
 interface RouteParamsProps {
   id: string
@@ -30,6 +31,7 @@ export function Arrival() {
   const [coordinates, setCoordinates] = useState<LatLng[]>([])
   const [departure, setDeparture] = useState<LocationInfoProps>({} as LocationInfoProps)
   const [arrival, setArrival] = useState<LocationInfoProps | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   const { goBack } = useNavigation()
 
@@ -128,11 +130,20 @@ export function Arrival() {
       })
     }
 
+    setIsLoading(false)
+
   }
 
   useEffect(() => {
     getLocationInfo()
   }, [historic])
+
+
+  if(isLoading) {
+    return (
+      <Loading />
+    )
+  }
   
 
   return (
