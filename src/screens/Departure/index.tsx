@@ -64,7 +64,11 @@ export function Departure() {
 
       if(!backgroundLocationPermission.granted) {
         setIsRegistering(false)
-        return Alert.alert('Localização', 'É necessário permitir que o App tenha acesso a localização em segundo plano. Acesse as configurações do dispositovo e habilite "Permitir o tempo todo"')
+        return Alert.alert(
+          'Localização', 
+          'É necessário permitir que o App tenha acesso a localização em segundo plano. Acesse as configurações do dispositovo e habilite "Permitir o tempo todo"',
+          [{ text: 'Abrir configurações', onPress: openSetting }]
+        )
       }
 
       await startLocationTask()
