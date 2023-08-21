@@ -4,10 +4,15 @@ import { IconBox } from '../IconBox';
 import { IconBoxProps } from '../ButtonIcon/inde';
 import { SizeProps } from '../IconBox/styles';
 
-interface Props {
+
+
+export interface LocationInfoProps {
     label: string
     description: string
     size?: SizeProps 
+}
+
+interface Props extends LocationInfoProps {
     icon: IconBoxProps
 }
 

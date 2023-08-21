@@ -40,7 +40,7 @@ export async function startLocationTask() {
         }
 
         await startLocationUpdatesAsync(BACKGROUND_TASK_NAME, {
-            accuracy: Accuracy.Highest,
+            accuracy: Accuracy.High,
             distanceInterval: 1,
             timeInterval: 1000
         })
